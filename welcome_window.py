@@ -1,0 +1,41 @@
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QFont, QPixmap
+
+class WelcomeWindow(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.initUI()
+
+    def initUI(self):
+        layout = QVBoxLayout()
+        layout.setContentsMargins(50, 50, 50, 50)
+        layout.setSpacing(30)
+        
+        # 添加logo
+        logo_label = QLabel()
+        logo_pixmap = QPixmap("path/to/your/logo.png")  # 请替换为实际的logo路径
+        logo_label.setPixmap(logo_pixmap.scaled(200, 200, Qt.AspectRatioMode.KeepAspectRatio))
+        logo_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(logo_label)
+        
+        title = QLabel("语音分析识别系统")
+        title.setObjectName("welcome-title")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
+        subtitle = QLabel("欢迎使用我们的语音识别系统")
+        subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        subtitle.setFont(QFont("Microsoft YaHei", 18))
+        subtitle.setStyleSheet("color: #666666;")
+        
+        start_button = QPushButton("开始测试")
+        start_button.setObjectName("start-button")
+        start_button.clicked.connect(self.parent().showInfoForm)
+        start_button.setFixedWidth(200)
+        
+        layout.addWidget(title)
+        layout.addWidget(subtitle)
+        layout.addStretch()
+        layout.addWidget(start_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        layout.addStretch()
+        self.setLayout(layout)
