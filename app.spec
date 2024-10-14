@@ -2,7 +2,7 @@
 
 import sys
 import os
-from PyInstaller.utils.hooks import collect_data_files, collect_submodules, collect_dynamic_libs
+from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
 block_cipher = None
 
@@ -15,9 +15,7 @@ datas += [('vosk-model-small-cn-0.22', 'vosk-model-small-cn-0.22')]  # Vosk 模�
 # 收集所有必要的隐藏导入
 hiddenimports = []
 hiddenimports += collect_submodules('vosk')
-hiddenimports += ['pyqtgraph.graphicsItems.ViewBox.axisCtrlTemplate_pyqt6',
-                  'pyqtgraph.graphicsItems.PlotItem.plotConfigTemplate_pyqt6',
-                  'pyqtgraph.imageview.ImageViewTemplate_pyqt6']
+hiddenimports += ['pyqtgraph']
 
 a = Analysis(
     ['main.py'],
@@ -34,25 +32,19 @@ a = Analysis(
     cipher=block_cipher,
     noarchive=False,
 )
-pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
-binaries = []
-binaries += collect_dynamic_libs('PyQt6')
+pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
 exe = EXE(
     pyz,
     a.scripts,
-    a.binaries + binaries,
-    a.zipfiles,
-    a.datas,
     [],
+    exclude_binaries=True,
     name='语音分析识别系统',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    upx_exclude=[],
-    runtime_tmpdir=None,
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
@@ -61,3 +53,15 @@ exe = EXE(
     entitlements_file=None,
     icon='assets/icon.ico',
 )
+
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    name='语音分析识别系统',
+)
+
