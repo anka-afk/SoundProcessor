@@ -14,7 +14,7 @@ class WelcomeWindow(QWidget):
         
         # 添加logo
         logo_label = QLabel()
-        logo_pixmap = QPixmap("path/to/your/logo.png")  # 请替换为实际的logo路径
+        logo_pixmap = QPixmap("assets\images\logo.png")
         logo_label.setPixmap(logo_pixmap.scaled(200, 200, Qt.AspectRatioMode.KeepAspectRatio))
         logo_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(logo_label)

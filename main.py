@@ -10,25 +10,24 @@ questions = [
     {
         'title': '第一题',
         'content': '请你准备好,读/a/一直持续到你的极限。',
-        'media': ["assets/images/question1.png"],  # 列表中的字符串
-        'hint': '这是一个简单的问候语。',
+        'media': ["assets/images/question1.png"],
+        'hint': '请你读出这个音节。',
         'answer': '啊'
     },
     {
         'title': '第二题',
-        'content': '请你准备好, 读芭比不博, 读三遍。',
-        'media': "assets/images/question2.png",  # 直接是字符串
-        'hint': '这是一个有着悠久历史的城市。',
+        'content': '请你准备好, 读芭比不博。',
+        'media': "assets/images/question2.png",
+        'hint': '请读出这个音节。',
         'answer': '芭比不博'
     },
     {
         'title': '第三题',
-        'content': '请观看视频。',
-        'media': ["assets/images/question2.png"],
-        'hint': '这是一个有着悠久历史的城市。',
-        'answer': '北京'
-    },
-    # 可以继续添加更多题目...
+        'content': '观看这个视频。',
+        'media': "assets/images/question3.mp4",
+        'hint': '请观看视频。',
+        'answer': '芭比不博'
+    }
 ]
 
 class MainWindow(QMainWindow):

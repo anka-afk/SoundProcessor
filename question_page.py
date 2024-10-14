@@ -13,6 +13,9 @@ import traceback
 import sys
 import logging
 import pypinyin
+from PyQt6.QtMultimedia import QMediaPlayer
+from PyQt6.QtMultimediaWidgets import QVideoWidget
+from PyQt6.QtCore import QUrl
 
 # 设置日志
 logging.basicConfig(filename='app.log', level=logging.DEBUG, 
@@ -37,8 +40,7 @@ class QuestionPage(QWidget):
         self.recording_timer.timeout.connect(self.stop_recording)
 
         try:
-            # 初始化Vosk模型
-            model_path = "vosk-model-small-cn-0.22"  # 请替换为实际的Vosk模型路径
+            model_path = "vosk-model-small-cn-0.22"
             if not os.path.exists(model_path):
                 raise FileNotFoundError(f"Vosk模型路径不存在: {model_path}")
             self.model = Model(model_path)
@@ -81,32 +83,64 @@ class QuestionPage(QWidget):
         content.setOpenExternalLinks(True)
         layout.addWidget(content)
 
-        # 图片显示
+        # 媒体显示
         media_layout = QHBoxLayout()
         media_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         if isinstance(self.question_data['media'], list):
             for media in self.question_data['media']:
                 if isinstance(media, str):
-                    # 如果 media 是字符串，假设它是图片路径
-                    image = QLabel()
-                    pixmap = QPixmap(media)
-                    if not pixmap.isNull():
-                        image.setPixmap(pixmap.scaled(300, 300, Qt.AspectRatioMode.KeepAspectRatio))
-                    media_layout.addWidget(image)
+                    if media.lower().endswith(('.mp4', '.avi', '.mov')):  # 视频文件
+                        self.video_widget = QVideoWidget()
+                        self.media_player = QMediaPlayer()
+                        self.media_player.setVideoOutput(self.video_widget)
+                        self.media_player.setSource(QUrl.fromLocalFile(media))
+                        media_layout.addWidget(self.video_widget)
+                        
+                        # 添加播放/暂停按钮
+                        self.play_button = QPushButton("播放/暂停")
+                        self.play_button.clicked.connect(self.play_pause_video)
+                        media_layout.addWidget(self.play_button)
+                    else:  # 图片文件
+                        image = QLabel()
+                        pixmap = QPixmap(media)
+                        if not pixmap.isNull():
+                            image.setPixmap(pixmap.scaled(300, 300, Qt.AspectRatioMode.KeepAspectRatio))
+                        media_layout.addWidget(image)
+                elif isinstance(media, dict) and media.get('type') == 'video':
+                    self.video_widget = QVideoWidget()
+                    self.media_player = QMediaPlayer()
+                    self.media_player.setVideoOutput(self.video_widget)
+                    self.media_player.setSource(QUrl.fromLocalFile(media['source']))
+                    media_layout.addWidget(self.video_widget)
+                    
+                    # 添加播放/暂停按钮
+                    self.play_button = QPushButton("播放/暂停")
+                    self.play_button.clicked.connect(self.play_pause_video)
+                    media_layout.addWidget(self.play_button)
                 elif isinstance(media, dict) and media.get('type') == 'image':
-                    # 如果 media 是字典且类型为图片
                     image = QLabel()
                     pixmap = QPixmap(media['source'])
                     if not pixmap.isNull():
                         image.setPixmap(pixmap.scaled(300, 300, Qt.AspectRatioMode.KeepAspectRatio))
                     media_layout.addWidget(image)
         elif isinstance(self.question_data['media'], str):
-            # 如果 media 直接是字符串，假设它是单个图片路径
-            image = QLabel()
-            pixmap = QPixmap(self.question_data['media'])
-            if not pixmap.isNull():
-                image.setPixmap(pixmap.scaled(300, 300, Qt.AspectRatioMode.KeepAspectRatio))
-            media_layout.addWidget(image)
+            if self.question_data['media'].lower().endswith(('.mp4', '.avi', '.mov')):  # 视频文件
+                self.video_widget = QVideoWidget()
+                self.media_player = QMediaPlayer()
+                self.media_player.setVideoOutput(self.video_widget)
+                self.media_player.setSource(QUrl.fromLocalFile(self.question_data['media']))
+                media_layout.addWidget(self.video_widget)
+                
+                # 添加播放/暂停按钮
+                self.play_button = QPushButton("播放/暂停")
+                self.play_button.clicked.connect(self.play_pause_video)
+                media_layout.addWidget(self.play_button)
+            else:  # 图片文件
+                image = QLabel()
+                pixmap = QPixmap(self.question_data['media'])
+                if not pixmap.isNull():
+                    image.setPixmap(pixmap.scaled(300, 300, Qt.AspectRatioMode.KeepAspectRatio))
+                media_layout.addWidget(image)
 
         layout.addLayout(media_layout)
 
@@ -294,6 +328,8 @@ class QuestionPage(QWidget):
 
     def closeEvent(self, event):
         try:
+            if hasattr(self, 'media_player'):
+                self.media_player.stop()
             if self.stream:
                 self.stream.stop_stream()
                 self.stream.close()
@@ -302,6 +338,12 @@ class QuestionPage(QWidget):
         except Exception as e:
             logger.error(f"关闭事件处理失败: {str(e)}", exc_info=True)
             event.accept()
+
+    def play_pause_video(self):
+        if self.media_player.playbackState() == QMediaPlayer.PlaybackState.PlayingState:
+            self.media_player.pause()
+        else:
+            self.media_player.play()
 
 def exception_hook(exctype, value, traceback):
     error_msg = f"Uncaught exception: {exctype.__name__}: {value}"
