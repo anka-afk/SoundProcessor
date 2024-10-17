@@ -60,4 +60,8 @@ class InfoFormWindow(QWidget):
         QMessageBox.information(self, "提交成功", info)
         
         # 跳转到题目页面
-        self.parent().parent().showQuestionPage()
+        main_window = self.window()
+        if hasattr(main_window, 'showQuestionWindow'):
+            main_window.showQuestionWindow()
+        else:
+            print("主窗口没有 showQuestionWindow 方法")

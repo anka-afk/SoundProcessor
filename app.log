@@ -267,3 +267,106 @@
 2024-10-14 15:28:53,325 - question_page - INFO - 正确答案拼音: babibubo
 2024-10-14 15:28:53,325 - question_page - INFO - 拼音相似度: 0.7368421052631579
 2024-10-14 15:28:53,325 - question_page - INFO - 回答错误
+2024-10-17 20:42:51,181 - question_page - INFO - Vosk模型初始化成功
+2024-10-17 20:42:51,680 - question_page - INFO - UI初始化完成
+2024-10-17 20:42:52,321 - question_page - INFO - Vosk模型初始化成功
+2024-10-17 20:42:52,363 - question_page - INFO - UI初始化完成
+2024-10-17 20:42:52,885 - question_page - INFO - Vosk模型初始化成功
+2024-10-17 20:42:52,981 - question_page - INFO - UI初始化完成
+2024-10-17 20:48:36,213 - question_window - CRITICAL - Uncaught exception: ImportError: cannot import name 'QuestionWindow' from 'question_window' (C:\Users\Laptop\Desktop\SoundProcessor\question_window.py)
+NoneType: None
+2024-10-17 20:50:49,003 - question_window - CRITICAL - Uncaught exception: FileNotFoundError: [Errno 2] No such file or directory: 'questions.json'
+NoneType: None
+2024-10-17 20:50:59,967 - question_window - CRITICAL - Uncaught exception: NameError: name 'questions' is not defined
+NoneType: None
+2024-10-17 20:52:03,593 - question_window - INFO - Vosk模型初始化成功
+2024-10-17 20:52:03,968 - question_window - INFO - UI初始化完成
+2024-10-17 20:52:04,416 - question_window - INFO - Vosk模型初始化成功
+2024-10-17 20:52:04,453 - question_window - INFO - UI初始化完成
+2024-10-17 20:52:04,879 - question_window - INFO - Vosk模型初始化成功
+2024-10-17 20:52:04,928 - question_window - INFO - UI初始化完成
+2024-10-17 21:06:00,761 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:06:00,763 - logger_handler - CRITICAL - Uncaught exception: NameError: name 'QHBoxLayout' is not defined
+NoneType: None
+2024-10-17 21:06:56,611 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:06:57,501 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:06:58,043 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:07:03,239 - logger_handler - CRITICAL - Uncaught exception: AttributeError: 'MainWindow' object has no attribute 'showQuestionPage'
+NoneType: None
+2024-10-17 21:07:24,052 - logger_handler - CRITICAL - Uncaught exception: KeyboardInterrupt: 
+NoneType: None
+2024-10-17 21:07:47,637 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:07:48,509 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:07:48,946 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:07:52,376 - logger_handler - CRITICAL - Uncaught exception: AttributeError: 'MainWindow' object has no attribute 'showQuestionPage'
+NoneType: None
+2024-10-17 21:08:46,414 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:08:47,290 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:08:47,738 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:08:47,778 - logger_handler - CRITICAL - Uncaught exception: AttributeError: 'MainWindow' object has no attribute 'question_pages'
+NoneType: None
+2024-10-17 21:09:09,358 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:09:10,220 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:09:10,663 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:09:14,223 - logger_handler - CRITICAL - Uncaught exception: AttributeError: 'MainWindow' object has no attribute 'showQuestionPage'
+NoneType: None
+2024-10-17 21:10:24,173 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:10:25,134 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:10:25,784 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:10:29,623 - logger_handler - CRITICAL - Uncaught exception: AttributeError: 'QStackedWidget' object has no attribute 'showQuestionWindow'
+NoneType: None
+2024-10-17 21:11:24,891 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:11:25,843 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:11:26,437 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:11:30,183 - logger_handler - CRITICAL - Uncaught exception: AttributeError: 'QStackedWidget' object has no attribute 'showQuestionWindow'
+NoneType: None
+2024-10-17 21:12:53,598 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:12:53,603 - logger_handler - CRITICAL - Uncaught exception: AttributeError: 'list' object has no attribute 'endswith'
+NoneType: None
+2024-10-17 21:13:52,180 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:13:52,681 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:13:56,389 - logger_handler - CRITICAL - Uncaught exception: AttributeError: 'QStackedWidget' object has no attribute 'showQuestionWindow'
+NoneType: None
+2024-10-17 21:14:52,375 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:14:52,796 - audio_handler - INFO - Vosk模型初始化成功
+2024-10-17 21:14:57,998 - logger_handler - CRITICAL - Uncaught exception: TypeError: start_recording() missing 1 required positional argument: 'callback'
+NoneType: None
+2024-10-17 21:14:58,057 - answer_checker - INFO - 正确答案: 啊
+2024-10-17 21:14:58,057 - answer_checker - INFO - 用户回答: None
+2024-10-17 21:14:58,057 - answer_checker - ERROR - 检查答案时出错: 'NoneType' object is not iterable
+Traceback (most recent call last):
+  File "C:\Users\Laptop\Desktop\SoundProcessor\answer_checker.py", line 16, in check_answer
+    recognized_pinyin = ''.join(pypinyin.lazy_pinyin(recognized_text))
+  File "E:\softwares\anaconda\envs\soundprocessor\lib\site-packages\pypinyin\core.py", line 385, in lazy_pinyin
+    return _pinyin.lazy_pinyin(
+  File "E:\softwares\anaconda\envs\soundprocessor\lib\site-packages\pypinyin\core.py", line 133, in lazy_pinyin
+    *self.pinyin(
+  File "E:\softwares\anaconda\envs\soundprocessor\lib\site-packages\pypinyin\core.py", line 94, in pinyin
+    for h in hans:
+TypeError: 'NoneType' object is not iterable
+2024-10-17 21:15:54,805 - answer_checker - INFO - 正确答案: 啊
+2024-10-17 21:15:54,805 - answer_checker - INFO - 用户回答: {
+  "partial" : ""
+}
+2024-10-17 21:15:54,806 - answer_checker - INFO - 识别文本拼音: {
+  "partial" : ""
+}
+2024-10-17 21:15:54,806 - answer_checker - INFO - 正确答案拼音: a
+2024-10-17 21:15:54,806 - answer_checker - INFO - 拼音相似度: 0.09523809523809523
+2024-10-17 21:15:54,806 - answer_checker - INFO - 回答错误
+2024-10-17 21:16:00,462 - answer_checker - INFO - 正确答案: 啊
+2024-10-17 21:16:00,462 - answer_checker - INFO - 用户回答: {
+  "partial" : ""
+}
+2024-10-17 21:16:00,462 - answer_checker - INFO - 识别文本拼音: {
+  "partial" : ""
+}
+2024-10-17 21:16:00,462 - answer_checker - INFO - 正确答案拼音: a
+2024-10-17 21:16:00,462 - answer_checker - INFO - 拼音相似度: 0.09523809523809523
+2024-10-17 21:16:00,462 - answer_checker - INFO - 回答错误
+2024-10-17 22:12:05,274 - answer_checker - INFO - 正确答案: 啊
+2024-10-17 22:12:05,276 - answer_checker - INFO - 用户回答: 啊 与 二三四
+2024-10-17 22:12:05,278 - answer_checker - INFO - 识别文本拼音: a yu ersansi
+2024-10-17 22:12:05,278 - answer_checker - INFO - 正确答案拼音: a
+2024-10-17 22:12:05,279 - answer_checker - INFO - 拼音相似度: 0.15384615384615385
+2024-10-17 22:12:05,279 - answer_checker - INFO - 回答错误

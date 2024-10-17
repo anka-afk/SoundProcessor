@@ -1,0 +1,16 @@
+[
+  {
+    "title": "第一题",
+    "content": "请你准备好,读/a/一直持续到你的极限。",
+    "media": "assets/images/question1.png",
+    "hint": "请你读出这个音节。",
+    "answer": "啊"
+  },
+  {
+    "title": "第二题",
+    "content": "请你准备好, 读芭比不博。",
+    "media": "assets/images/question2.png",
+    "hint": "请读出这个音节。",
+    "answer": "啊"
+  }
+]

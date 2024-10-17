@@ -1,62 +1,31 @@
+import os
+os.environ['QT_DEBUG_PLUGINS'] = '1'
+os.environ['QT_MULTIMEDIA_PREFERRED_PLUGINS'] = 'windowsmediafoundation'
 import sys
+import json
 from PyQt6.QtWidgets import QApplication, QMainWindow, QStackedWidget, QMessageBox
 from welcome_window import WelcomeWindow
 from info_form_window import InfoFormWindow
-from question_page import QuestionPage
+from question_window import QuestionWindow
+from video_interaction_window import VideoInteractionWindow
 from styles import set_global_style
 from summary_window import SummaryWindow
 
-questions = [
-    {
-        'title': '第一题',
-        'content': '请你准备好,读/a/一直持续到你的极限。',
-        'media': ["assets/images/question1.png"],
-        'hint': '请你读出这个音节。',
-        'answer': '啊'
-    },
-    {
-        'title': '第二题',
-        'content': '请你准备好, 读芭比不博。',
-        'media': "assets/images/question2.png",
-        'hint': '请读出这个音节。',
-        'answer': '芭比不博'
-    },
-    {
-        'title': '第三题',
-        'content': '观看这个视频。',
-        'media': "assets/images/question3.mp4",
-        'hint': '请观看视频。',
-        'answer': '芭比不博'
-    }
-]
+def load_questions():
+    with open('questions.json', 'r', encoding='utf-8') as file:
+        return json.load(file)
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.current_question = 0
         self.results = []
+        self.questions = load_questions()
         self.initUI()
 
         # 设置主窗口背景色和按钮样式
-        self.setStyleSheet("""
-            QMainWindow {
-                background-color: #f5f5f5;
-            }
-            QPushButton {
-                background-color: #4CAF50;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                text-align: center;
-                text-decoration: none;
-                font-size: 16px;
-                margin: 4px 2px;
-                border-radius: 4px;
-            }
-            QPushButton:hover {
-                background-color: #45a049;
-            }
-        """)
+        from globalStyles import get_global_style
+        self.setStyleSheet(get_global_style())
 
     def initUI(self):
         self.setWindowTitle("语音分析识别系统")
@@ -67,15 +36,15 @@ class MainWindow(QMainWindow):
 
         self.welcome_window = WelcomeWindow(self)
         self.info_form_window = InfoFormWindow(self)
-        self.question_pages = [QuestionPage(self.central_widget, q, i) for i, q in enumerate(questions)]
+        self.question_windows = [QuestionWindow(self, q, i) for i, q in enumerate(self.questions)]
+        self.video_interaction_window = VideoInteractionWindow(self)
         self.summary_window = SummaryWindow(self)
 
         self.central_widget.addWidget(self.welcome_window)
         self.central_widget.addWidget(self.info_form_window)
-        for page in self.question_pages:
-            self.central_widget.addWidget(page)
-            page.answer_correct.connect(self.show_next_question)
-
+        for window in self.question_windows:
+            self.central_widget.addWidget(window)
+        self.central_widget.addWidget(self.video_interaction_window)
         self.central_widget.addWidget(self.summary_window)
 
         self.central_widget.setCurrentWidget(self.welcome_window)
@@ -83,18 +52,19 @@ class MainWindow(QMainWindow):
     def showInfoForm(self):
         self.central_widget.setCurrentWidget(self.info_form_window)
 
-    def showQuestionPage(self):
+    def showQuestionWindow(self):
         self.current_question = 0
-        self.central_widget.setCurrentWidget(self.question_pages[self.current_question])
+        if self.question_windows:
+            self.central_widget.setCurrentWidget(self.question_windows[self.current_question])
+        else:
+            print("没有可用的问题窗口")
 
     def show_next_question(self):
         self.current_question += 1
-        if self.current_question < len(self.question_pages):
-            self.central_widget.setCurrentWidget(self.question_pages[self.current_question])
+        if self.current_question < len(self.question_windows):
+            self.central_widget.setCurrentWidget(self.question_windows[self.current_question])
         else:
-            # 所有题目都回答完毕，显示结算页面
-            self.summary_window.update_results(self.results)
-            self.central_widget.setCurrentWidget(self.summary_window)
+            self.show_video_interaction()
 
     def record_result(self, question_number, is_correct, user_answer, correct_answer):
         self.results.append({
@@ -108,6 +78,15 @@ class MainWindow(QMainWindow):
         self.current_question = 0
         self.results = []
         self.central_widget.setCurrentWidget(self.welcome_window)
+
+    def show_video_interaction(self):
+        self.central_widget.setCurrentWidget(self.video_interaction_window)
+
+    def show_summary_window(self):
+        self.summary_window.update_results(self.results)
+        self.central_widget.setCurrentWidget(self.summary_window)
+
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
