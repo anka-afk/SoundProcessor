@@ -1,0 +1,130 @@
+# Python 字节编译文件
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C 扩展
+*.so
+
+# 分发/打包
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+*.manifest
+*.spec
+
+# 安装程序日志
+pip-log.txt
+pip-delete-this-directory.txt
+
+# 单元测试/覆盖率报告
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# 翻译
+*.mo
+*.pot
+
+# Django 相关
+*.log
+local_settings.py
+db.sqlite3
+
+# Flask 相关
+instance/
+.webassets-cache
+
+# Scrapy 相关
+.scrapy
+
+# Sphinx 文档
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# celery beat 调度文件
+celerybeat-schedule
+
+# SageMath 解析文件
+*.sage.py
+
+# 环境
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder 项目设置
+.spyderproject
+.spyproject
+
+# Rope 项目设置
+.ropeproject
+
+# mkdocs 文档
+/site
+
+# mypy
+.mypy_cache/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# 操作系统生成的文件
+.DS_Store
+Thumbs.db
+
+# 项目特定的忽略
+*.log
+*.sqlite
+
+# PyQt 生成的文件
+*.pyc
+*.pyo
+*_ui.py
+*_rc.py
+
+# 音频和视频文件（如果这些是生成的或不需要版本控制）
+*.wav
+*.mp3
+*.mp4
+
+# 其他可能的大文件
+*.zip
+*.tar.gz
