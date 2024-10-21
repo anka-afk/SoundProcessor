@@ -83,7 +83,7 @@ class AudioHandler:
         
         recognized_text = result.get('text', '')
         logger.debug(f"识别的文本：{recognized_text}")
-        return recognized_text
+        return recognized_text, audio_data
 
     def record(self):
         if self.is_recording:

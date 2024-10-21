@@ -9,6 +9,7 @@ from welcome_window import WelcomeWindow
 from info_form_window import InfoFormWindow
 from question_window import QuestionWindow
 from video_interaction_window import VideoInteractionWindow
+from audio_processing_window import AudioProcessingWindow
 from styles import set_global_style
 from summary_window import SummaryWindow
 from PyQt6.QtGui import QPixmap
@@ -103,7 +104,9 @@ class MainWindow(QMainWindow):
     def show_summary_window(self):
         self.summary_window.update_results(self.results)
         self.central_widget.setCurrentWidget(self.summary_window)
-
+    def show_audio_processing_window(self):
+        self.audio_processing_window = AudioProcessingWindow(self)
+        self.setCentralWidget(self.audio_processing_window)
 
 
 def main():

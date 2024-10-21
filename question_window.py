@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QScrollArea, QLabel, QPushButton, QTextBrowser, QFrame, QMessageBox
-from PyQt6.QtCore import QTimer, pyqtSignal, Qt
+from PyQt6.QtCore import QTimer, pyqtSignal, Qt, QUrl
 from PyQt6.QtGui import QPixmap
 import pyqtgraph as pg
 import numpy as np
@@ -7,6 +7,7 @@ from audio_handler import AudioHandler
 from answer_checker import AnswerChecker
 from logger_handler import setup_logger
 from utils import resource_path  # 如果您将函数放在了 utils.py 中
+from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
 
 logger = setup_logger()
 
@@ -21,6 +22,11 @@ class QuestionWindow(QWidget):
         self.audio_handler = AudioHandler()
         self.is_recording = False
         self.frames = []
+
+        # 初始化音频播放器
+        self.media_player = QMediaPlayer()
+        self.audio_output = QAudioOutput()
+        self.media_player.setAudioOutput(self.audio_output)
 
         self.initUI()
 
@@ -44,7 +50,7 @@ class QuestionWindow(QWidget):
             image_label = QLabel()
             pixmap = QPixmap(resource_path(media_path))
             if not pixmap.isNull():
-                image_label.setPixmap(pixmap.scaled(300, 300, Qt.AspectRatioMode.KeepAspectRatio))
+                image_label.setPixmap(pixmap.scaled(500, 500, Qt.AspectRatioMode.KeepAspectRatio))
                 layout.addWidget(image_label, alignment=Qt.AlignmentFlag.AlignCenter)
             else:
                 print(f"Failed to load image: {media_path}")
@@ -76,7 +82,7 @@ class QuestionWindow(QWidget):
 
     def stop_recording(self):
         if self.is_recording:
-            recognized_text = self.audio_handler.stop_recording()
+            recognized_text, audio_data = self.audio_handler.stop_recording()
             self.is_recording = False
             self.record_button.setText("按住说话")
             correct_answer = self.question_data.get('answer', '')
@@ -91,9 +97,11 @@ class QuestionWindow(QWidget):
                 self.main_window.record_result(self.question_number, is_correct, recognized_text, correct_answer)
                 if is_correct:
                     self.answer_correct.emit()
+                    self.play_audio("assets/audio/hint1.mp3")  # 播放正确提示音
                     QMessageBox.information(self, "正确", "回答正确！")
                     self.main_window.show_next_question()
                 else:
+                    self.play_audio("assets/audio/hint2.mp3")  # 播放错误提示音
                     QMessageBox.warning(self, "错误", "回答错误，请重试。")
 
     def update_plot(self):
@@ -103,8 +111,10 @@ class QuestionWindow(QWidget):
             spectrum = np.log10(spectrum[:len(spectrum)//2] + 1e-10)
             self.spectrum_curve.setData(spectrum)
 
+    def play_audio(self, audio_path):
+        self.media_player.setSource(QUrl.fromLocalFile(resource_path(audio_path)))
+        self.media_player.play()
+
 def load_global_pixmap():
     return QPixmap(resource_path("path/to/image.png"))
 
-# 删除这一行
-# logo_pixmap = QPixmap(resource_path("assets/images/logo.png"))

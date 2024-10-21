@@ -13,15 +13,6 @@ class WelcomeWindow(QWidget):
         layout.setContentsMargins(50, 50, 50, 50)
         layout.setSpacing(30)
         
-        # 添加logo
-        logo_label = QLabel()
-        logo_pixmap = QPixmap(resource_path("assets/images/logo.png"))
-        if not logo_pixmap.isNull():
-            logo_label.setPixmap(logo_pixmap.scaled(200, 200, Qt.AspectRatioMode.KeepAspectRatio))
-        else:
-            print("Failed to load logo image")
-        layout.addWidget(logo_label)
-        
         title = QLabel("语音分析识别系统")
         title.setObjectName("welcome-title")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)

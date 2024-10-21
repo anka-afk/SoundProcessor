@@ -1,5 +1,5 @@
 import os
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QMessageBox, QProgressBar, QFrame
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QMessageBox, QProgressBar, QFrame, QGridLayout
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
 from PyQt6.QtMultimediaWidgets import QVideoWidget
 from PyQt6.QtCore import QUrl, Qt, QTimer
@@ -10,6 +10,7 @@ from logger_handler import setup_logger
 import pyqtgraph as pg
 import numpy as np
 from utils import resource_path  # 如果您将函数放在了 utils.py 中
+import wave
 
 logger = setup_logger()
 
@@ -36,45 +37,52 @@ class VideoInteractionWindow(QWidget):
             logger.debug(f"设备 {i}: {dev_info['name']}, 输入通道: {dev_info['maxInputChannels']}")
 
     def initUI(self):
-        layout = QVBoxLayout(self)
+        # 使用QGridLayout替代QVBoxLayout
+        layout = QGridLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)  # 移除布局边距
 
         self.video_widget = QVideoWidget()
         self.video_widget.setMinimumSize(640, 480)  # 设置最小尺寸
-        layout.addWidget(self.video_widget)
+        layout.addWidget(self.video_widget, 0, 0, -1, -1)  # 视频小部件占据整个网格
 
         self.media_player = QMediaPlayer()
         self.audio_output = QAudioOutput()
         self.media_player.setAudioOutput(self.audio_output)
         self.media_player.setVideoOutput(self.video_widget)
 
+        # 创建一个透明的覆盖层来放置其他控件
+        overlay = QWidget(self)
+        overlay.setStyleSheet("background-color: rgba(0, 0, 0, 0);")
+        overlay_layout = QVBoxLayout(overlay)
+
         self.status_label = QLabel("准备播放视频")
-        layout.addWidget(self.status_label, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.status_label.setStyleSheet("color: white; font-size: 18px;")
+        overlay_layout.addWidget(self.status_label, alignment=Qt.AlignmentFlag.AlignCenter)
 
         self.progress_bar = QProgressBar(self)
         self.progress_bar.setRange(0, 100)
         self.progress_bar.setValue(0)
         self.progress_bar.setVisible(False)
-        layout.addWidget(self.progress_bar)
+        overlay_layout.addWidget(self.progress_bar)
 
         self.record_button = QPushButton("点击开始")
         self.record_button.pressed.connect(self.start_recording)
         self.record_button.released.connect(self.stop_recording)
         self.record_button.setVisible(False)
-        layout.addWidget(self.record_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        overlay_layout.addWidget(self.record_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
         self.next_button = QPushButton("下一步")
         self.next_button.clicked.connect(self.on_next_clicked)
         self.next_button.setVisible(False)
-        layout.addWidget(self.next_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        overlay_layout.addWidget(self.next_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
         # 频谱图
-        spectrum_frame = QFrame()
-        spectrum_layout = QVBoxLayout(spectrum_frame)
         self.spectrum_plot = pg.PlotWidget()
         self.spectrum_plot.setBackground('w')
         self.spectrum_curve = self.spectrum_plot.plot(pen='b')
-        spectrum_layout.addWidget(self.spectrum_plot)
-        layout.addWidget(spectrum_frame)
+        overlay_layout.addWidget(self.spectrum_plot)
+
+        layout.addWidget(overlay, 0, 0, -1, -1)  # 覆盖层也占据整个网格
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_plot)
@@ -105,8 +113,8 @@ class VideoInteractionWindow(QWidget):
         self.media_player.play()
         logger.debug(f"正在播放视频: {video_path}")
 
-        # 在视频播放 4 秒后开始录音
-        QTimer.singleShot(4000, self.prepare_recording)
+        # 在视频播放 5 秒后开始录音
+        QTimer.singleShot(5000, self.prepare_recording)
 
     def prepare_recording(self):
         logger.debug("VideoInteractionWindow: 准备录音")
@@ -151,7 +159,7 @@ class VideoInteractionWindow(QWidget):
         if self.is_recording:
             logger.debug("VideoInteractionWindow: 尝试停止录音")
             try:
-                recognized_text = self.audio_handler.stop_recording()
+                recognized_text, audio_data = self.audio_handler.stop_recording()
                 self.is_recording = False
                 self.record_button.setText("点击开始")
                 self.record_button.setEnabled(True)
@@ -159,6 +167,10 @@ class VideoInteractionWindow(QWidget):
                 self.recording_timer.stop()
                 self.progress_timer.stop()
                 logger.debug(f"VideoInteractionWindow: 录音成功停止，识别的文本: {recognized_text}")
+                
+                # 如果是第二个视频，保存录音结果
+                if self.current_video == 2:
+                    self.save_audio(audio_data)
             except Exception as e:
                 logger.error(f"VideoInteractionWindow: 停止录音时出错 - {str(e)}")
                 recognized_text = ""
@@ -176,14 +188,27 @@ class VideoInteractionWindow(QWidget):
                 logger.warning("未检测到回答")
                 QTimer.singleShot(2000, self.play_video)  # 2秒后重新播放视频
 
+    def save_audio(self, audio_data):
+        output_filename = "output.wav"
+        wf = wave.open(output_filename, 'wb')
+        wf.setnchannels(1)
+        wf.setsampwidth(2)  # 16-bit
+        wf.setframerate(16000)  # 假设采样率为16kHz，根据实际情况调整
+        wf.writeframes(audio_data)
+        wf.close()
+        logger.debug(f"录音已保存为 {output_filename}")
+
     def check_answer(self, recognized_text):
         is_correct = AnswerChecker.check_answer(recognized_text, "杯子")
         if is_correct:
             self.play_hint(HINT_1_PATH)
             self.status_label.setText("回答正确！")
+            self.main_window.show_audio_processing_window()
+            self.reset_state()  # 在退出视频交互页面时重置状态
         else:
             self.play_hint(HINT_2_PATH)
             self.status_label.setText(f"回答错误。您的回答是：{recognized_text}")
+            QTimer.singleShot(2000, self.play_video)
         self.next_button.setVisible(True)
 
     def play_hint(self, hint_path):
@@ -195,5 +220,5 @@ class VideoInteractionWindow(QWidget):
         self.media_player.play()
 
     def on_next_clicked(self):
-        self.main_window.show_summary_window()
+        self.main_window.show_audio_processing_window()
         self.reset_state()  # 在退出视频交互页面时重置状态
