@@ -19,6 +19,7 @@ VIDEO_1_PATH = resource_path(os.path.join("assets", "videos", "video1.mp4"))
 VIDEO_2_PATH = resource_path(os.path.join("assets", "videos", "video2.mp4"))
 HINT_1_PATH = resource_path(os.path.join("assets", "audio", "hint1.mp3"))
 HINT_2_PATH = resource_path(os.path.join("assets", "audio", "hint2.mp3"))
+BACKGROUND_IMAGE_PATH = resource_path(os.path.join("assets", "images", "background.png"))
 
 class VideoInteractionWindow(QWidget):
     def __init__(self, main_window):
@@ -82,6 +83,18 @@ class VideoInteractionWindow(QWidget):
         self.spectrum_curve = self.spectrum_plot.plot(pen='b')
         overlay_layout.addWidget(self.spectrum_plot)
 
+        # 添加背景图片标签
+        self.background_label = QLabel(self)
+        self.background_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.background_label.setStyleSheet("background-color: black;")
+        layout.addWidget(self.background_label, 0, 0, -1, -1)
+        background_pixmap = QPixmap(BACKGROUND_IMAGE_PATH)
+        if background_pixmap.isNull():
+            logger.error(f"无法加载背景图片: {BACKGROUND_IMAGE_PATH}")
+            return
+        self.background_label.setPixmap(background_pixmap.scaled(self.size(), Qt.AspectRatioMode.KeepAspectRatioByExpanding, Qt.TransformationMode.SmoothTransformation))
+        self.background_label.show()
+
         layout.addWidget(overlay, 0, 0, -1, -1)  # 覆盖层也占据整个网格
 
         self.timer = QTimer()
@@ -113,8 +126,21 @@ class VideoInteractionWindow(QWidget):
         self.media_player.play()
         logger.debug(f"正在播放视频: {video_path}")
 
-        # 在视频播放 5 秒后开始录音
+        # 在视频播放 4 秒后开始录音
         QTimer.singleShot(5000, self.prepare_recording)
+        
+    def play_second_video(self):
+        video_path = VIDEO_1_PATH if self.current_video == 1 else VIDEO_2_PATH
+        if not os.path.exists(video_path):
+            QMessageBox.warning(self, "错误", f"视频文件不存在: {video_path}")
+            return
+
+        self.media_player.setSource(QUrl.fromLocalFile(video_path))
+        self.media_player.play()
+        logger.debug(f"正在播放视频: {video_path}")
+
+        # 在视频播放 3 秒后开始录音
+        QTimer.singleShot(3300, self.prepare_recording)
 
     def prepare_recording(self):
         logger.debug("VideoInteractionWindow: 准备录音")
@@ -177,16 +203,18 @@ class VideoInteractionWindow(QWidget):
             
             if recognized_text:
                 self.status_label.setText("录音完成，已检测到回答")
+                self.play_hint(HINT_1_PATH)
                 logger.debug(f"检测到回答: {recognized_text}")
                 if self.current_video == 1:
                     self.current_video = 2
-                    QTimer.singleShot(1000, self.play_video)  # 延迟1秒后播放下一个视频
+                    QTimer.singleShot(0, self.play_second_video)  # 延迟1秒后播放下一个视频
                 else:
                     self.check_answer(recognized_text)
             else:
                 self.status_label.setText("未检测到回答，请重新尝试")
+                self.play_hint(HINT_2_PATH)
                 logger.warning("未检测到回答")
-                QTimer.singleShot(2000, self.play_video)  # 2秒后重新播放视频
+                QTimer.singleShot(3500, self.play_video)  # 2秒后重新播放视频
 
     def save_audio(self, audio_data):
         output_filename = "output.wav"
@@ -222,3 +250,5 @@ class VideoInteractionWindow(QWidget):
     def on_next_clicked(self):
         self.main_window.show_audio_processing_window()
         self.reset_state()  # 在退出视频交互页面时重置状态
+
+

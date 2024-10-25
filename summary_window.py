@@ -1,5 +1,8 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel, QScrollArea
 from PyQt6.QtCore import Qt
+import os
+import sys
+import json
 
 class SummaryWindow(QWidget):
     def __init__(self, parent=None):
@@ -67,3 +70,22 @@ class SummaryWindow(QWidget):
             self.score_label.setText(f"总分: {score:.2f}%")
         else:
             self.score_label.setText("总分: 0.00%")
+
+    def load_user_info(self):
+        if getattr(sys, 'frozen', False):
+            # 如果是打包后的 exe 运行
+            base_path = os.path.dirname(sys.executable)
+        else:
+            # 如果是在开发环境运行
+            base_path = os.path.dirname(os.path.abspath(__file__))
+        
+        file_path = os.path.join(base_path, "user_info.json")
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except FileNotFoundError:
+            print(f"用户信息文件不存在: {file_path}")
+            return {}
+        except Exception as e:
+            print(f"读取用户信息时出错: {e}")
+            return {}
