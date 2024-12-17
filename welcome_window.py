@@ -3,7 +3,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont, QPixmap
 from PyQt6.QtMultimedia import QMediaPlayer, QAudioOutput
 from PyQt6.QtCore import QUrl
-from utils import resource_path  # 如果您将函数放在了 utils.py 中
+from utils import resource_path
 
 class WelcomeWindow(QWidget):
     def __init__(self, parent=None):

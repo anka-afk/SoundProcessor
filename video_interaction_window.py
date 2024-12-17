@@ -9,7 +9,7 @@ from answer_checker import AnswerChecker
 from logger_handler import setup_logger
 import pyqtgraph as pg
 import numpy as np
-from utils import resource_path  # 如果您将函数放在了 utils.py 中
+from utils import resource_path
 import wave
 
 logger = setup_logger()

@@ -27,39 +27,53 @@ class InfoFormWindow(QWidget):
         form_layout.setContentsMargins(50, 0, 50, 0)
         form_layout.setSpacing(20)
         
+        # 姓名（必填）
         self.name_input = QLineEdit()
-        self.name_input.setObjectName("input-field")
         self.name_input.setPlaceholderText("请输入您的姓名")
-        form_layout.addRow("姓名:", self.name_input)
+        form_layout.addRow("姓名: *", self.name_input)
         
-        self.age_input = QLineEdit()
-        self.age_input.setObjectName("input-field")
-        self.age_input.setPlaceholderText("请输入您的年龄")
-        form_layout.addRow("年龄:", self.age_input)
-        
-        # 添加性别选择
+        # 性别（必填）
         self.gender_input = QComboBox()
-        self.gender_input.setObjectName("input-field")
         self.gender_input.addItems(["男", "女"])
-        form_layout.addRow("性别:", self.gender_input)
+        form_layout.addRow("性别: *", self.gender_input)
         
+        # 年龄（必填）
+        self.age_input = QLineEdit()
+        self.age_input.setPlaceholderText("请输入您的年龄")
+        form_layout.addRow("年龄: *", self.age_input)
+        
+        # 学历
+        self.education_input = QLineEdit()
+        self.education_input.setPlaceholderText("请输入您的学历")
+        form_layout.addRow("学历:", self.education_input)
+        
+        # 体重
+        self.weight_input = QLineEdit()
+        self.weight_input.setPlaceholderText("请输入您的体重 (kg)")
+        form_layout.addRow("体重:", self.weight_input)
+        
+        # 身高
+        self.height_input = QLineEdit()
+        self.height_input.setPlaceholderText("请输入您的身高 (cm)")
+        form_layout.addRow("身高:", self.height_input)
+        
+        # 备注
         self.note_input = QTextEdit()
-        self.note_input.setObjectName("input-field")
         self.note_input.setPlaceholderText("请输入备注信息（可选）")
         form_layout.addRow("备注:", self.note_input)
         
         layout.addLayout(form_layout)
         
+        # 提交按钮
         submit_button = QPushButton("提交并开始测试")
-        submit_button.setObjectName("submit-button")
         submit_button.clicked.connect(self.submitInfo)
         submit_button.setFixedWidth(200)
-        
         layout.addStretch()
         layout.addWidget(submit_button, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addStretch()
         
         self.setLayout(layout)
+
 
     def showEvent(self, event):
         super().showEvent(event)
@@ -86,39 +100,47 @@ class InfoFormWindow(QWidget):
 
     def submitInfo(self):
         name = self.name_input.text()
-        age = self.age_input.text()
         gender = self.gender_input.currentText()
+        age = self.age_input.text()
+        education = self.education_input.text()
+        weight = self.weight_input.text()
+        height = self.height_input.text()
         note = self.note_input.toPlainText()
-        
-        if not name or not age:
-            QMessageBox.warning(self, "警告", "姓名和年龄不能为空！")
+
+        # 验证必填项
+        if not name.strip() or not gender.strip() or not age.strip():
+            QMessageBox.warning(self, "警告", "姓名、性别和年龄为必填项！")
             return
-        
-        # 保存用户信息到文件
+
+        # 组织用户信息
         user_info = {
-            "name": name,
-            "age": age,
-            "gender": gender,
-            "note": note
+            "name": name.strip(),
+            "gender": gender.strip(),
+            "age": age.strip(),
+            "education": education.strip(),
+            "weight": weight.strip(),
+            "height": height.strip(),
+            "note": note.strip()
         }
-        self.save_user_info(user_info)
+
+        # 保存用户信息到 MainWindow
+        main_window = self.window()
+        if hasattr(main_window, 'set_user_info'):
+            main_window.set_user_info(user_info)
         
+        # 保存用户信息
+        self.save_user_info(user_info)
+
         if self.player:
             self.player.stop()
-        # 直接跳转到题目页面
+        # 跳转到题目页面
         main_window = self.window()
         if hasattr(main_window, 'showQuestionWindow'):
             main_window.showQuestionWindow()
-        else:
-            print("主窗口没有 showQuestionWindow 方法")
 
     def save_user_info(self, user_info):
-        if getattr(sys, 'frozen', False):
-            # 如果是打包后的 exe 运行
-            base_path = os.path.dirname(sys.executable)
-        else:
-            # 如果是在开发环境运行
-            base_path = os.path.dirname(os.path.abspath(__file__))
+        base_path = os.path.join(os.getcwd(), "结果", user_info["name"])
+        os.makedirs(base_path, exist_ok=True)  # 创建用户文件夹
         
         file_path = os.path.join(base_path, "user_info.json")
         try:
@@ -127,6 +149,7 @@ class InfoFormWindow(QWidget):
             print(f"用户信息已保存到: {file_path}")
         except Exception as e:
             print(f"保存用户信息时出错: {e}")
+
 
 def load_global_pixmap():
     return QPixmap(resource_path("path/to/image.png"))

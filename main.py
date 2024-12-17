@@ -1,5 +1,4 @@
 import os
-os.environ['QT_DEBUG_PLUGINS'] = '1'
 os.environ['QT_MULTIMEDIA_PREFERRED_PLUGINS'] = 'windowsmediafoundation'
 os.environ['QT_QPA_PLATFORM'] = 'windows:fontengine=freetype'
 import sys
@@ -11,9 +10,7 @@ from question_window import QuestionWindow
 from video_interaction_window import VideoInteractionWindow
 from audio_processing_window import AudioProcessingWindow
 from styles import set_global_style
-from summary_window import SummaryWindow
 from PyQt6.QtGui import QPixmap
-from main_window import MainWindow  # 假设您的主窗口类在 main_window.py 中
 from utils import resource_path
 
 def resource_path(relative_path):
@@ -57,14 +54,12 @@ class MainWindow(QMainWindow):
         self.info_form_window = InfoFormWindow(self)
         self.question_windows = [QuestionWindow(self, q, i) for i, q in enumerate(self.questions)]
         self.video_interaction_window = VideoInteractionWindow(self)
-        self.summary_window = SummaryWindow(self)
 
         self.central_widget.addWidget(self.welcome_window)
         self.central_widget.addWidget(self.info_form_window)
         for window in self.question_windows:
             self.central_widget.addWidget(window)
         self.central_widget.addWidget(self.video_interaction_window)
-        self.central_widget.addWidget(self.summary_window)
 
         self.central_widget.setCurrentWidget(self.welcome_window)
 
@@ -83,7 +78,17 @@ class MainWindow(QMainWindow):
         if self.current_question < len(self.question_windows):
             self.central_widget.setCurrentWidget(self.question_windows[self.current_question])
         else:
-            self.show_video_interaction()
+            self.show_audio_processing_window()
+            
+    def show_previous_question(self):
+        """返回上一题"""
+        if self.current_question > 0:
+            self.current_question -= 1
+            self.central_widget.setCurrentWidget(self.question_windows[self.current_question])
+            print(f"返回到第 {self.current_question + 1} 题")
+        else:
+            print("已经是第一题了")
+
 
     def record_result(self, question_number, is_correct, user_answer, correct_answer):
         self.results.append({
@@ -101,12 +106,15 @@ class MainWindow(QMainWindow):
     def show_video_interaction(self):
         self.central_widget.setCurrentWidget(self.video_interaction_window)
 
-    def show_summary_window(self):
-        self.summary_window.update_results(self.results)
-        self.central_widget.setCurrentWidget(self.summary_window)
     def show_audio_processing_window(self):
         self.audio_processing_window = AudioProcessingWindow(self)
         self.setCentralWidget(self.audio_processing_window)
+        
+    def set_user_info(self, user_info):
+        self.user_info = user_info
+        print(f"用户信息已设置: {self.user_info}")
+
+
 
 
 def main():
