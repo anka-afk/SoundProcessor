@@ -14,14 +14,16 @@ from PyQt6.QtGui import QPixmap
 from utils import resource_path
 
 def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
-    try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
+    """
+    获取资源文件的绝对路径，适用于开发和 PyInstaller 打包后的外部资源。
+    """
+    if getattr(sys, 'frozen', False):  # 如果是打包后的 exe
+        base_path = os.path.dirname(sys.executable)  # exe 所在目录
+    else:
+        base_path = os.path.abspath(".")  # 开发模式，当前目录
 
     return os.path.join(base_path, relative_path)
+
 
 def load_questions():
     questions_path = resource_path('questions.json')
@@ -132,7 +134,7 @@ def main():
     print(f"Test video path: {test_video_path}")
     print(f"Image exists: {os.path.exists(test_image_path)}")
     print(f"Video exists: {os.path.exists(test_video_path)}")
-    
+     
     main_window = MainWindow()
     print("MainWindow created")
     main_window.show()

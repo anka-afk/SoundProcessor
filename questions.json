@@ -1,24 +1,140 @@
 [
   {
-    "title": "第一题",
-    "content": "请你准备好,读/a/一直持续到你的极限。",
+    "title": "页面1",
+    "content": "请尽可能长时间稳定地发/a/，以你舒服的音量和音高为准",
     "media": {
       "type": "image",
-      "path": "assets/images/question1.png"
+      "path": "assets/images/page1.png"
     },
-    "hint": "请你读出这个音节。",
-    "answer": "啊",
+    "interaction": "record",
+    "answer": "/a/"
+  },
+  {
+    "title": "页面2",
+    "content": "请尽可能长时间稳定地发/i/，以你舒服的音量和音高为准",
+    "media": {
+      "type": "image",
+      "path": "assets/images/page2.png"
+    },
+    "interaction": "record",
+    "answer": "/i/"
+  },
+  {
+    "title": "页面3",
+    "content": "请尽可能长时间稳定地发/u/，以你舒服的音量和音高为准",
+    "media": {
+      "type": "image",
+      "path": "assets/images/page3.png"
+    },
+    "interaction": "record",
+    "answer": "/u/"
+  },
+  {
+    "title": "页面4",
+    "content": "请尽可能长时间稳定地发/o/，以你舒服的音量和音高为准",
+    "media": {
+      "type": "image",
+      "path": "assets/images/page4.png"
+    },
+    "interaction": "record",
+    "answer": "/o/"
+  },
+  {
+    "title": "页面5",
+    "content": "请尽可能长时间稳定地发/e/，以你舒服的音量和音高为准",
+    "media": {
+      "type": "image",
+      "path": "assets/images/page5.png"
+    },
+    "interaction": "record",
+    "answer": "/e/"
+  },
+  {
+    "title": "页面6",
+    "content": "请尽可能长时间稳定地发/ü/，以你舒服的音量和音高为准",
+    "media": {
+      "type": "image",
+      "path": "assets/images/page6.png"
+    },
+    "interaction": "record",
+    "answer": "/ü/"
+  },
+  {
+    "title": "页面7",
+    "content": "请读八笔不博3遍",
+    "media": {
+      "type": "image",
+      "path": "assets/images/page7.png"
+    },
+    "interaction": "record",
+    "answer": "八笔不博"
+  },
+  {
+    "title": "页面8",
+    "content": "请读八百标兵奔北坡，炮兵并排北边跑3遍。",
+    "media": {
+      "type": "image",
+      "path": "assets/images/page8.png"
+    },
+    "interaction": "record",
+    "answer": "八百标兵奔北坡，炮兵并排北边跑"
+  },
+  {
+    "title": "页面9",
+    "content": "请描述一下这个图画讲什么？将它讲成一个故事。",
+    "media": {
+      "type": "image",
+      "path": "assets/images/story_image.png"
+    },
     "interaction": "record"
   },
   {
-    "title": "第二题",
-    "content": "请你准备好, 读芭比不博。",
+    "title": "页面10",
+    "content": "请复述：妈妈骂哥哥。",
     "media": {
-      "type": "image",
-      "path": "assets/images/question2.png"
+      "type": "audio",
+      "path": "assets/audio/mom_scolds_brother.mp3"
     },
-    "hint": "请读出这个音节。",
-    "answer": "芭比不博",
-    "interaction": "record"
+    "interaction": "record",
+    "steps": [
+      {
+        "action": "wait",
+        "duration": 2
+      },
+      {
+        "action": "play_audio",
+        "path": "assets/audio/mom_scolds_brother.mp3"
+      },
+      {
+        "action": "record",
+        "type": "auto",
+        "duration": 5
+      }
+    ],
+    "answer": "妈妈骂哥哥"
+  },
+  {
+    "title": "页面11",
+    "content": "请复述：小女孩回忆说，哥哥抢了我的玩具，所以妈妈骂哥哥，哥哥不应该抢了我的玩具。",
+    "media": {
+      "type": "audio",
+      "path": "assets/audio/sister_recollection.mp3"
+    },
+    "interaction": "record",
+    "steps": [
+      {
+        "action": "wait",
+        "duration": 2
+      },
+      {
+        "action": "play_audio",
+        "path": "assets/audio/sister_recollection.mp3"
+      },
+      {
+        "action": "record",
+        "type": "manual"
+      }
+    ],
+    "answer": "小女孩回忆说，哥哥抢了我的玩具，所以妈妈骂哥哥，哥哥不应该抢了我的玩具"
   }
 ]

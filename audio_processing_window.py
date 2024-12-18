@@ -6,6 +6,7 @@ import numpy as np
 import json
 import os
 import sys
+import csv
 
 class AudioProcessingWindow(QWidget):
     def __init__(self, main_window):
@@ -48,23 +49,31 @@ class AudioProcessingWindow(QWidget):
         user_info = self.load_user_info()
         self.display_user_info(user_info)
 
-        # 加载并处理音频文件
-        audio_file_path = "output.wav"
+        # 构建音频文件路径
+        user_name = user_info.get("name", "Unknown_User")
+        base_path = os.path.join(os.getcwd(), "结果", user_name)
+        audio_file_path = os.path.join(base_path, "recording_question_0.wav")
+
         if os.path.exists(audio_file_path):
+            print(f"处理音频文件: {audio_file_path}")
             results = self.process_audio_file(audio_file_path)
             self.display_results(results)
+            self.save_results_to_csv(user_info, results)  # 保存结果到 CSV 文件
         else:
-            self.name_label.setText("错误: output.wav 文件不存在")
+            self.name_label.setText(f"错误: {audio_file_path} 文件不存在")
+            print(f"错误: 音频文件不存在: {audio_file_path}")
+
+
 
     def load_user_info(self):
-        if getattr(sys, 'frozen', False):
-            # 如果是打包后的 exe 运行
-            base_path = os.path.dirname(sys.executable)
-        else:
-            # 如果是在开发环境运行
-            base_path = os.path.dirname(os.path.abspath(__file__))
-        
+        # 获取主窗口中的用户信息
+        user_info = getattr(self.main_window, "user_info", {})
+        user_name = user_info.get("name", "Unknown_User")
+
+        # 定义用户文件夹路径
+        base_path = os.path.join(os.getcwd(), "结果", user_name)
         file_path = os.path.join(base_path, "user_info.json")
+
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
@@ -74,6 +83,38 @@ class AudioProcessingWindow(QWidget):
         except Exception as e:
             print(f"读取用户信息时出错: {e}")
             return {}
+
+    def save_results_to_csv(self, user_info, results):
+        """保存分析结果到 CSV 文件"""
+        user_name = user_info.get("name", "Unknown_User")
+        base_path = os.path.join(os.getcwd(), "结果", user_name)
+        os.makedirs(base_path, exist_ok=True)  # 确保用户目录存在
+
+        file_path = os.path.join(base_path, "analysis_results.csv")
+
+        # 生成 CSV 数据
+        formant1 = results['formants'][0] if len(results['formants']) > 0 else 0.0
+        formant2 = results['formants'][1] if len(results['formants']) > 1 else 0.0
+
+        data = [
+            ["声学检测项目", "测量结果", "单位"],
+            ["基频", f"{results['f0'][0]:.2f}-{results['f0'][1]:.2f}", "Hz"],
+            ["基频-最小值", f"{results['f0'][0]:.2f}", "Hz"],
+            ["基频-最大值", f"{results['f0'][1]:.2f}", "Hz"],
+            ["能量", f"{results['energy']:.2f}", "dB"],
+            ["第一共振峰", f"{formant1:.2f}", "Hz"],
+            ["第二共振峰", f"{formant2:.2f}", "Hz"]
+        ]
+
+        # 保存到 CSV 文件
+        try:
+            with open(file_path, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                writer.writerows(data)
+            print(f"分析结果已保存到: {file_path}")
+        except Exception as e:
+            print(f"保存 CSV 文件时出错: {e}")
+
 
     def display_user_info(self, user_info):
         self.name_label.setText(f"姓名：{user_info.get('name', '未知')}")

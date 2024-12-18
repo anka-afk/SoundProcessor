@@ -206,42 +206,37 @@ class QuestionWindow(QWidget):
 
         if action == "wait":
             duration = step.get("duration", 1) * 1000  # 转换为毫秒
+            print(f"等待 {duration / 1000} 秒...")
             QTimer.singleShot(duration, self.execute_next_step)
-        elif action == "show_media":
-            media = step.get("media", {})
-            media_type = media.get("type")
-            if media_type == "image":
-                image_path = resource_path(media["path"])
-                pixmap = QPixmap(image_path)
-                if not pixmap.isNull():
-                    image_label = QLabel()
-                    image_label.setPixmap(pixmap.scaled(500, 500, Qt.AspectRatioMode.KeepAspectRatio))
-                    self.layout.addWidget(image_label, alignment=Qt.AlignmentFlag.AlignCenter)
-            elif media_type == "video":
-                self.video_widget = QVideoWidget(self)
-                self.media_player = QMediaPlayer(self)
-                self.media_player.setVideoOutput(self.video_widget)
-                self.media_player.setSource(QUrl.fromLocalFile(resource_path(media["path"])))
-                self.layout.addWidget(self.video_widget)
-                self.media_player.play()
-                self.media_player.mediaStatusChanged.connect(lambda: self.execute_next_step())
+
         elif action == "play_audio":
             audio_path = resource_path(step.get("path", ""))
-            self.media_player = QMediaPlayer(self)
-            self.audio_output = QAudioOutput(self)
-            self.media_player.setAudioOutput(self.audio_output)
+            print(f"播放音频: {audio_path}")
+
+            if not hasattr(self, "media_player"):
+                self.media_player = QMediaPlayer(self)
+                self.audio_output = QAudioOutput(self)
+                self.media_player.setAudioOutput(self.audio_output)
+            
             self.media_player.setSource(QUrl.fromLocalFile(audio_path))
             self.media_player.play()
-            # 等待音频播放结束后继续执行
+
             self.media_player.mediaStatusChanged.connect(
-                lambda status: self.execute_next_step() if status == QMediaPlayer.MediaStatus.EndOfMedia else None
+                lambda status: self.execute_next_step() 
+                if status == QMediaPlayer.MediaStatus.EndOfMedia else None
             )
+
         elif action == "record":
-            if not hasattr(self, "record_button"):  # 确保录音控件存在
-                self.add_recording_controls(self.layout)
-            duration = step.get("duration", 5) * 1000
-            self.start_recording()
-            QTimer.singleShot(duration, self.stop_recording_and_continue)
+            record_type = step.get("type", "manual")
+            duration = step.get("duration", 5) * 1000  # 自动录音的时长
+
+            if record_type == "manual":
+                print("自行录音：显示录音按钮")
+                if not hasattr(self, "record_button"):
+                    self.add_recording_controls(self.layout)
+            elif record_type == "auto":
+                print("自动录音：倒数 3 秒开始录音")
+                self.auto_recording(duration)
 
         elif action == "show_hint":
             hint = step.get("hint", "")
@@ -249,6 +244,24 @@ class QuestionWindow(QWidget):
             self.execute_next_step()
 
         self.current_step_index += 1
+
+    def auto_recording(self, duration):
+        """自动录音：倒数 3 秒后自动开始录音，指定时长后停止"""
+        countdown_label = QLabel("录音倒计时：3 秒")
+        countdown_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.layout.addWidget(countdown_label)
+
+        def update_countdown(seconds_left):
+            countdown_label.setText(f"录音倒计时：{seconds_left} 秒")
+            if seconds_left == 0:
+                countdown_label.setText("录音中...")
+                self.start_recording()
+                QTimer.singleShot(duration, self.stop_recording_and_continue)
+
+        # 使用倒计时逐步更新文本
+        for i in range(3, -1, -1):
+            QTimer.singleShot((3 - i) * 1000, lambda seconds=i: update_countdown(seconds))
+
 
     def stop_recording_and_continue(self):
         """停止录音并继续执行步骤"""
